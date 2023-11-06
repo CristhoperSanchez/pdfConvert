@@ -19,12 +19,12 @@ App.get('/', (req,res) => {
 
 App.get('/export',(req,res) =>{
 				var changeMe = "originial"
-				Util.execute("touch thisfilewascreated.txt")
+				Util.execute()
 				.then(result => {
 								changeMe = "Changed";
-								res.sendFile(path.join(__dirname + '/data/pdf/test.pdf'));
+								res.redirect('/')
 				})
-				.catch((result)=> {console.log("Something wrong")});
+				.catch((err)=> {console.log(err)});
 })
 
 App.listen(Port, () =>{

@@ -8,11 +8,9 @@ const Drawio = 'docker run -it -w /data -v $(pwd)/data:/data rlespianasse/drawio
 
 
 */
-module.exports = class Terminal {
-
-   static async exec(cmd, { log = true} = {}){
+async function exec(cmd, { log = true} = {}){
       return new Promise((resolve, reject) =>{
-        ChildProcess.exec(Drawio, {
+        ChildProcess.exec(`${Drawio}`, {
             shell: 'bash',
         }, (err,stdout) => {
             if(err) return reject(err)
@@ -20,4 +18,5 @@ module.exports = class Terminal {
           });
       })
    }
-}
+
+exports.Terminal = exec
