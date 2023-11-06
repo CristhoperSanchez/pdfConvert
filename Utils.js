@@ -1,5 +1,5 @@
 const ChildProcess = require('child_process');
-const Drawio = 'docker run -it -w /data -v $(pwd):/data rlespianasse/drawio-desktop-headless -x -f pdf -o /data/pdf/ /data/drawio'
+const Drawio = 'docker run -it -w /data -v $(pwd)/data:/data rlespianasse/drawio-desktop-headless:local -x -f pdf -o /data/pdf /data/drawio'
 
 /* 
   Possible changes? 
