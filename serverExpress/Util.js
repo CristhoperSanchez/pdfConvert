@@ -14,6 +14,19 @@ async function execute(cmd){
 
 exports.execute = execute
 
+
+
+
+
+
+
+
+
+
+
+
+
+ 
 /*
 	DEAR MORNING CRIS,
 		this sucked and took forever, the master computer needs to have sudo snap drawio installed. and the docker package called for is the :latest
