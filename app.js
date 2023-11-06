@@ -1,11 +1,15 @@
 const Express = require('express')
 const App = Express()
+const path = require('path')
 const Port = 1738
 const Terminal = require('./Utils')
 
 
 
 
+
+App.use('/drawio', Express.static(path.join(__dirname, 'data/drawio')))
+App.use('/pdf', Express.static(path.join(__dirname, 'data/pdf')))
 
 
 App.route('/')

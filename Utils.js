@@ -1,6 +1,5 @@
 const ChildProcess = require('child_process');
-const Drawio = 'docker run it -w /data -v $(pwd):/data rlespianasse/drawio-desktop-headless x -f pdf -o /data/pdf/ /data/files'
-
+const Drawio = 'docker run -it -w /data -v $(pwd):/data rlespianasse/drawio-desktop-headless -x -f pdf -o /data/pdf/ /data/drawio'
 
 /* 
   Possible changes? 
@@ -13,7 +12,7 @@ module.exports = class Terminal {
 
    static async exec(cmd, { log = true} = {}){
       return new Promise((resolve, reject) =>{
-        ChildProcess.exec(sampleCommand, {
+        ChildProcess.exec(Drawio, {
             shell: 'bash',
         }, (err,stdout) => {
             if(err) return reject(err)
