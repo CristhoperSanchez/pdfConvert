@@ -1,5 +1,5 @@
 const ChildProcess = require('child_process');
-const Drawio = 'docker run -it -w /data -v $(pwd)/data:/data rlespianasse/drawio-desktop-headless:local -x -f pdf -o /data/pdf /data/drawio'
+
 
 /* 
   Possible changes? 
@@ -8,9 +8,11 @@ const Drawio = 'docker run -it -w /data -v $(pwd)/data:/data rlespianasse/drawio
 
 
 */
-async function exec(cmd, { log = true} = {}){
+async function exec( filename, { log = true} = {}){
+			var Dname = filename.replace('drawio','pdf')
+			var ConvertDrawio = `docker run -t -w /data -v $(pwd)/data:/data pdf_convert:local -x -f pdf -o /data/pdf/${Dname} /data/drawio/${filename}`
       return new Promise((resolve, reject) =>{
-        ChildProcess.exec(`${Drawio}`, {
+        ChildProcess.exec(ConvertDrawio,{
             shell: 'bash',
         }, (err,stdout) => {
             if(err) return reject(err)
@@ -19,4 +21,4 @@ async function exec(cmd, { log = true} = {}){
       })
    }
 
-exports.Terminal = exec
+exports.exec = exec
