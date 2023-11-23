@@ -10,8 +10,10 @@ const ChildProcess = require('child_process');
 */
 async function exec( filename, { log = true} = {}){
 			var Dname = filename.replace('drawio','pdf')
-			var ConvertDrawio = `docker run -t -w /data -v $(pwd)/data:/data pdf_convert:local -x -f pdf -o /data/pdf/${Dname} /data/drawio/${filename}`
+			var ConvertDrawio = `docker run -t -w /data -v $(pwd)/data:/data pdf_convert:local -x -f pdf -o /data/pdf/'${Dname}' /data/drawio/'${filename}'`
+				console.log("Command: \n", ConvertDrawio)
       return new Promise((resolve, reject) =>{
+
         ChildProcess.exec(ConvertDrawio,{
             shell: 'bash',
         }, (err,stdout) => {
