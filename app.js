@@ -4,8 +4,7 @@ const fileUpload = require('express-fileupload');
 const App = Express()
 const Port = process.env.ENV == 'dev' ? 3000: process.env.PORT;
 const path = require('path')
-const Util = require('./Utils');
-
+const {base64, exec} = require('./Utils');
 const ENV = process.env.ENV !='dev' ? null : true
 
 
@@ -14,16 +13,6 @@ App.use(Express.static('pages'));
 App.disable('etag');
 App.use(Express.urlencoded({extended: true}));
 App.use(fileUpload());
-
-
-
-
-
-
-
-
-
-
 App.use((req,res,next) =>{
 	
 	next()
@@ -35,24 +24,27 @@ App.get('/', (req,res) => {
 
 
 App.post('/convert', (req,res) =>{
-	var pdfstring = req.body["drawio-text"]
-	if(pdfstring)
+	var pngstring = req.body["drawio-text"]
+	var name = req.body["name-text"] || "default"
+
+	if(pngstring)
 	{
-	console.log(pdfstring)
+		//res.set({"Content-Disposition": "attachment; filename=attachment.png"})
+		base64(pngstring , name);
+		res.redirect('/')
+
 	}else {
 		console.log("No string")
 		var text = {"hello.txt": "Hello Cruel world", "bye.txt": "Goodby world"};
 		res.set({"Content-Disposition": "attachment; filename=hello.txt"});
-		res.send(text["hello.txt"])
+		res.send("this is the custom filen content")
 	}
-	res.redirect('/')
 
 })
 
 App.post('/export',(req,res) =>{
 		let file;
 		if(!req.files){
-
 						console.log("No files were uploaded");
 						return res.status(400).send("No files were uploaded")
 		};
@@ -66,8 +58,7 @@ App.post('/export',(req,res) =>{
 		var filename = file.name
 		var Dfile = filename.replace('drawio','pdf')
 		console.log("FileName: ", filename, " Conversion Value: ", Dfile);
-
-		Util.exec(filename)
+		exec(filename)
 			.then((result) =>{
 						res.sendfile(path.join(__dirname + "/data/pdf/" + Dfile));
 			}).catch((error) => {

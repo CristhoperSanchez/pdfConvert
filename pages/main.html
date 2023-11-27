@@ -28,6 +28,7 @@
 														text-align: center;
 														display: flex;
 														flex-direction: column;
+														
 										}
 										form {
 														text-align: center;
@@ -55,8 +56,9 @@
 							</form>
 							<form class="upload" action="/convert" method="POST" enctype="multipart/form-data">
 											<p>Upload Text:</p><br>
+											<input type="textarea" id="name-text" name="name-text" placeholder="Filename"><br>
 											<label for="drawio-text"> Insert manual PNG string</label>
-											<input type="text" id="drawio-text" name="drawio-text" placeholder="PNG-String">
+											<input type="textarea" id="drawio-text" name="drawio-text" placeholder="PNG-String">
 											<input type='submit'/>
 							</form>
 	
