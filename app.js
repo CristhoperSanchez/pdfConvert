@@ -1,14 +1,10 @@
-console.clear();
 require('dotenv').config()
 const Express = require('express')
 const fileUpload = require('express-fileupload');
 const App = Express()
 const Port = process.env.ENV == 'dev' ? 3000: process.env.PORT;
 const path = require('path')
-const {base64, exec, png} = require('./Utils');
-
-
-
+const {xml, Serverlog} = require('./Utils');
 App.use(Express.static('pages'));
 App.disable('etag');
 App.use(Express.urlencoded({extended: true}));
@@ -16,6 +12,7 @@ App.use(fileUpload());
 
 
 
+// MiddleWear Funciton for Logging
 App.use((req,res,next) =>{
 	next()
 });
@@ -28,7 +25,6 @@ App.get('/', (req,res) => {
 App.post('/convert', async (req,res) =>{
 	var pngstring = req.body["drawio-text"]
 	var name = req.body["name-text"] || "default"
-
 	if(pngstring)
 	{
 		//res.set({"Content-Disposition": "attachment; filename=attachment.png"})
@@ -51,7 +47,23 @@ App.post('/convert', async (req,res) =>{
 	res.redirect('/');
 })
 
-App.post('/export',(req,res) =>{
+App.post('/pdfConversion',(req,res) =>{
+	if(!req.body || req.body.xml){
+		res.send({
+			status: 400,
+			error: "Invalid Request"
+		})
+		return;
+	};
+	xml(req.body.xml).then(
+		(result)=>{
+			console.log(result);
+			res.sendfile(path.join(__dirname + "/data/pdf/" + "test.pdf"));
+		}
+	).catch((error)=> Serverlog("PDF Conversion Error: ", error));
+})
+
+/* App.post('/export',(req,res) =>{
 		let file;
 		if(!req.files){
 						console.log("No files were uploaded");
@@ -73,13 +85,17 @@ App.post('/export',(req,res) =>{
 			}).catch((error) => {
 							console.log(error);
 			});
-
-
 		// res.sendfile(path.join(__dirname + "/data/pdf/test.pdf"));
-})
+}) */
+
+
+
 
 App.get('/*', (req,res) =>{
-				res.send("Invalid Path");
+		res.send({
+			status: 400,
+			error: "Invalid Request"
+		})
 });
 
 
