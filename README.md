@@ -14,3 +14,24 @@
 
 				Express server will need to execute a command to decompress the drawio string and export it.	
 
+
+
+
+
+
+Notes of Build:
+	- File Uploading:
+		- Currently, using "fs". Previously was going to use "express-file-upload" 
+			Npm package that handles uploading files. Curious if this process should be handled Asynconously??
+
+	- Routes:	
+		- HTML is currently served
+		- "/convert": Takes API key and XML to conversion
+			- ?NEED? -> XML checker for invalid requests??
+				- should they be stored?
+		
+	- Logging: 
+		- Currently not set, but would using it be important?
+		
+
+			

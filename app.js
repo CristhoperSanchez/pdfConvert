@@ -5,8 +5,23 @@ const App = Express()
 const Port = process.env.ENV == 'dev' ? 3000: process.env.PORT;
 const path = require('path')
 const {xml, Serverlog} = require('./Utils');
+const fs = require('fs');
+
+const [
+	PORT,
+	APIKEY,
+	ENV,
+] = [
+	process.env.PORT,
+	process.env.APIKEY,
+	process.env.ENV,
+]
+
+// console.log("Enviroment Variables: ", PORT, APIKEY, ENV)
+
 App.use(Express.static('pages'));
 App.disable('etag');
+App.disable('x-powered-by');
 App.use(Express.urlencoded({extended: true}));
 App.use(fileUpload());
 
@@ -14,54 +29,41 @@ App.use(fileUpload());
 
 // MiddleWear Funciton for Logging
 App.use((req,res,next) =>{
-	next()
-});
-
-App.get('/', (req,res) => {
-				res.sendFile(__dirname + '/pages/main.html');
-});
-
-
-App.post('/convert', async (req,res) =>{
-	var pngstring = req.body["drawio-text"]
-	var name = req.body["name-text"] || "default"
-	if(pngstring)
-	{
-		//res.set({"Content-Disposition": "attachment; filename=attachment.png"})
-		base64(pngstring , name)
-			.then((result) =>{
-			console.log("result: ", result)
-			res.sendfile(path.join(__dirname +  result));
-			return result
-		}).then((filename)=>{
-			png(filename)
-		})
-			.catch((error) => console.log(error))
-	}else {
-		console.log("No string")
-		var text = {"hello.txt": "Hello Cruel world", "bye.txt": "Goodby world"};
-		res.set({"Content-Disposition": "attachment; filename=hello.txt"});
-		res.send("this is the custom filen content")
-	}
-
-	res.redirect('/');
-})
-
-App.post('/pdfConversion',(req,res) =>{
-	if(!req.body || req.body.xml){
+	if(!req.body || (req.body["APIKEY"] != APIKEY )){
+		res.status(401)
 		res.send({
 			status: 400,
 			error: "Invalid Request"
-		})
+			});	
+			console.log("Invalid Request Detected")
 		return;
-	};
-	xml(req.body.xml).then(
+	}else{
+		next()
+	}
+	return
+});
+
+
+App.get('/', (req,res) => {
+	res.sendFile(__dirname + '/pages/main.html');
+});
+
+App.post('/convert', async (req,res) =>{
+	var XML = req.body["XML"]
+	if(!XML){
+		res.send("No XML detected;");
+		return;
+	}
+	console.clear()
+	fs.writeFileSync(path.join(__dirname + "/data/xml/" + "drawio.xml"), XML, {encoding: "utf-8"})
+	xml("drawio.xml").then(
 		(result)=>{
-			console.log(result);
-			res.sendfile(path.join(__dirname + "/data/pdf/" + "test.pdf"));
+		console.log("Conversion done")
+		res.sendFile(path.join(__dirname + '/data/pdf/'  + "drawio.pdf"));
 		}
 	).catch((error)=> Serverlog("PDF Conversion Error: ", error));
 })
+
 
 /* App.post('/export',(req,res) =>{
 		let file;
@@ -73,7 +75,7 @@ App.post('/pdfConversion',(req,res) =>{
 		file = req.files.drawio
 		let uploadPath = __dirname + '/data/drawio/' + file.name
 		file.mv(uploadPath, function(err){
-						if(err)return res.status(500).send(err);
+					if(err)return res.status(500).send(err);
 		});
 
 		var filename = file.name
@@ -99,7 +101,7 @@ App.get('/*', (req,res) =>{
 });
 
 
-App.listen(Port, () =>{
-				console.log(`App listening on port: ${Port}`)
-});
+var server = App.listen(3000)
+server.keepAliveTimeout = 90*1000;
+server.headersTimeoutTimeout = 90*1000;
 
